@@ -30,6 +30,7 @@ public class RNAppShortcutsModule extends ReactContextBaseJavaModule {
     private final String ICON_FOLDER_KEY = "iconFolderName";
     private final String ICON_NAME_KEY = "iconName";
     private final String ACTIVITY_NAME_KEY = "activityName";
+    private final String URL = "url";
 
     public RNAppShortcutsModule(ReactApplicationContext reactContext) {
         super(reactContext);
@@ -111,29 +112,54 @@ public class RNAppShortcutsModule extends ReactContextBaseJavaModule {
 
     @Nullable
     private ShortcutInfo initShortcut(ReadableMap shortcutDetail) {
-        if (Build.VERSION.SDK_INT < 25) return null;
+        if (Build.VERSION.SDK_INT < 25)
+            return null;
 
         String activityName = DEFAULT_ACTIVITY;
+        String targetUrl="";
         try {
             activityName = shortcutDetail.getString(ACTIVITY_NAME_KEY);
         } catch (Exception e) {
 
         }
-        Activity currentActivity = this.reactContext.getCurrentActivity();
-        Intent intent = new Intent(currentActivity.getApplicationContext(), currentActivity.getClass());
-        intent.putExtra("shortcutId", shortcutDetail.getString(ID_KEY));
-        intent.setAction(Intent.ACTION_VIEW);
+        try {
+            targetUrl = shortcutDetail.getString(URL);
+        } catch (Exception e) {
 
-        Context currentContext = currentActivity.getApplicationContext();
-        int iconId = currentContext.getResources().getIdentifier(shortcutDetail.getString(ICON_NAME_KEY), shortcutDetail.getString(ICON_FOLDER_KEY), currentContext.getPackageName());
+        }
+        if(!isEmpty(targetUrl)){
+            Activity currentActivity = this.reactContext.getCurrentActivity();
+            Context currentContext = currentActivity.getApplicationContext();
+            int iconId = currentContext.getResources().getIdentifier(shortcutDetail.getString(ICON_NAME_KEY),
+                    shortcutDetail.getString(ICON_FOLDER_KEY), currentContext.getPackageName());
 
-        ShortcutInfo shortcut = new ShortcutInfo.Builder(currentActivity, shortcutDetail.getString(ID_KEY))
-                .setShortLabel(shortcutDetail.getString(SHORT_LABEL_KEY))
-                .setLongLabel(shortcutDetail.getString(LONG_LABEL_KEY))
-                .setIcon(Icon.createWithResource(currentActivity.getApplicationContext(), iconId))
-                .setIntent(intent)
-                .build();
-        return shortcut;
+            ShortcutInfo shortcut = new ShortcutInfo.Builder(currentActivity, shortcutDetail.getString(ID_KEY))
+                    .setShortLabel(shortcutDetail.getString(SHORT_LABEL_KEY))
+                    .setLongLabel(shortcutDetail.getString(LONG_LABEL_KEY))
+                    .setIcon(Icon.createWithResource(currentActivity.getApplicationContext(), iconId)).setIntent(new Intent(Intent.ACTION_VIEW,
+                            Uri.parse("peekaboo://device/new-deals/self")))
+                    .build();
+            return shortcut;
+        }
+        else {
+            Activity currentActivity = this.reactContext.getCurrentActivity();
+            Intent intent = new Intent(currentActivity.getApplicationContext(), currentActivity.getClass());
+            intent.putExtra("shortcutId", shortcutDetail.getString(ID_KEY));
+            intent.setAction(Intent.ACTION_VIEW);
+
+            Context currentContext = currentActivity.getApplicationContext();
+            int iconId = currentContext.getResources().getIdentifier(shortcutDetail.getString(ICON_NAME_KEY),
+                    shortcutDetail.getString(ICON_FOLDER_KEY), currentContext.getPackageName());
+
+            ShortcutInfo shortcut = new ShortcutInfo.Builder(currentActivity, shortcutDetail.getString(ID_KEY))
+                    .setShortLabel(shortcutDetail.getString(SHORT_LABEL_KEY))
+                    .setLongLabel(shortcutDetail.getString(LONG_LABEL_KEY))
+                    .setIcon(Icon.createWithResource(currentActivity.getApplicationContext(), iconId)).setIntent(intent)
+                    .build();
+            return shortcut;
+        }
+
+
     }
 
     private boolean isShortcutExist(String id) {
