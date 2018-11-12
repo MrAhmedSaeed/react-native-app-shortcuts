@@ -139,7 +139,7 @@ public class RNAppShortcutsModule extends ReactContextBaseJavaModule {
                     .setShortLabel(shortcutDetail.getString(SHORT_LABEL_KEY))
                     .setLongLabel(shortcutDetail.getString(LONG_LABEL_KEY))
                     .setIcon(Icon.createWithResource(currentActivity.getApplicationContext(), iconId)).setIntent(new Intent(Intent.ACTION_VIEW,
-                            Uri.parse(targetUrl)))
+                            Uri.parse("peekaboo://device/new-deals/self")))
                     .build();
             return shortcut;
         }
