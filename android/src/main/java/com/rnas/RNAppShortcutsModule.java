@@ -11,6 +11,7 @@ import android.support.annotation.Nullable;
 
 import java.util.Arrays;
 import java.util.List;
+import android.net.Uri;
 
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
