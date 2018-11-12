@@ -19,6 +19,7 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReadableMap;
+import static android.text.TextUtils.isEmpty;
 
 public class RNAppShortcutsModule extends ReactContextBaseJavaModule {
 
