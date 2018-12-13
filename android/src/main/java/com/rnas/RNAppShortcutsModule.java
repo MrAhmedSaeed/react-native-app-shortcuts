@@ -164,16 +164,21 @@ public class RNAppShortcutsModule extends ReactContextBaseJavaModule {
 
     }
 
-    private boolean isShortcutExist(String id) {
-        if (Build.VERSION.SDK_INT < 25) return false;
-
-        ShortcutManager shortcutManager = getShortCutManager();
-        List<ShortcutInfo> shortcutInfoList = shortcutManager.getDynamicShortcuts();
-        for (ShortcutInfo shortcutInfo : shortcutInfoList) {
-            if (shortcutInfo.getId().equals(id)) {
-                return true;
+     private boolean isShortcutExist(String id) {
+        if (Build.VERSION.SDK_INT < 25)
+            return false;
+        try {
+            ShortcutManager shortcutManager = getShortCutManager();
+            List<ShortcutInfo> shortcutInfoList = shortcutManager.getDynamicShortcuts();
+            for (ShortcutInfo shortcutInfo : shortcutInfoList) {
+                if (shortcutInfo.getId().equals(id)) {
+                    return true;
+                }
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+
         return false;
     }
 
