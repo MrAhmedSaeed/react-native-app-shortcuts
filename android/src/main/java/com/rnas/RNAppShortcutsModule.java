@@ -48,8 +48,8 @@ public class RNAppShortcutsModule extends ReactContextBaseJavaModule {
     public void handleShortcut(Callback successCallback) {
         if (Build.VERSION.SDK_INT < 25) return;
 
-        Activity currentActivity = this.reactContext.getCurrentActivity();
-        String shortCutId = currentActivity.getIntent().getStringExtra("shortcutId");
+//        Activity currentActivity = this.reactContext.getCurrentActivity();
+        String shortCutId = getCurrentActivity().getIntent().getStringExtra("shortcutId");
         if (shortCutId != null) {
             successCallback.invoke(shortCutId);
         }
@@ -130,33 +130,33 @@ public class RNAppShortcutsModule extends ReactContextBaseJavaModule {
 
         }
         if(!isEmpty(targetUrl)){
-            Activity currentActivity = this.reactContext.getCurrentActivity();
-            Context currentContext = currentActivity.getApplicationContext();
-            int iconId = currentContext.getResources().getIdentifier(shortcutDetail.getString(ICON_NAME_KEY),
-                    shortcutDetail.getString(ICON_FOLDER_KEY), currentContext.getPackageName());
+//            Activity currentActivity = this.reactContext.getCurrentActivity();
+//            Context currentContext = currentActivity.getApplicationContext();
+            int iconId = getReactApplicationContext().getResources().getIdentifier(shortcutDetail.getString(ICON_NAME_KEY),
+                    shortcutDetail.getString(ICON_FOLDER_KEY), getReactApplicationContext().getPackageName());
 
-            ShortcutInfo shortcut = new ShortcutInfo.Builder(currentActivity, shortcutDetail.getString(ID_KEY))
+            ShortcutInfo shortcut = new ShortcutInfo.Builder(getCurrentActivity(), shortcutDetail.getString(ID_KEY))
                     .setShortLabel(shortcutDetail.getString(SHORT_LABEL_KEY))
                     .setLongLabel(shortcutDetail.getString(LONG_LABEL_KEY))
-                    .setIcon(Icon.createWithResource(currentActivity.getApplicationContext(), iconId)).setIntent(new Intent(Intent.ACTION_VIEW,
+                    .setIcon(Icon.createWithResource(getCurrentActivity().getApplicationContext(), iconId)).setIntent(new Intent(Intent.ACTION_VIEW,
                             Uri.parse(targetUrl)))
                     .build();
             return shortcut;
         }
         else {
-            Activity currentActivity = this.reactContext.getCurrentActivity();
-            Intent intent = new Intent(currentActivity.getApplicationContext(), currentActivity.getClass());
+//            Activity currentActivity = this.reactContext.getCurrentActivity();
+            Intent intent = new Intent(getCurrentActivity().getApplicationContext(), getCurrentActivity().getClass());
             intent.putExtra("shortcutId", shortcutDetail.getString(ID_KEY));
             intent.setAction(Intent.ACTION_VIEW);
 
-            Context currentContext = currentActivity.getApplicationContext();
+            Context currentContext = getCurrentActivity().getApplicationContext();
             int iconId = currentContext.getResources().getIdentifier(shortcutDetail.getString(ICON_NAME_KEY),
                     shortcutDetail.getString(ICON_FOLDER_KEY), currentContext.getPackageName());
 
-            ShortcutInfo shortcut = new ShortcutInfo.Builder(currentActivity, shortcutDetail.getString(ID_KEY))
+            ShortcutInfo shortcut = new ShortcutInfo.Builder(getCurrentActivity(), shortcutDetail.getString(ID_KEY))
                     .setShortLabel(shortcutDetail.getString(SHORT_LABEL_KEY))
                     .setLongLabel(shortcutDetail.getString(LONG_LABEL_KEY))
-                    .setIcon(Icon.createWithResource(currentActivity.getApplicationContext(), iconId)).setIntent(intent)
+                    .setIcon(Icon.createWithResource(getCurrentActivity().getApplicationContext(), iconId)).setIntent(intent)
                     .build();
             return shortcut;
         }
@@ -193,3 +193,4 @@ public class RNAppShortcutsModule extends ReactContextBaseJavaModule {
     }
 
 }
+
