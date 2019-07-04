@@ -12,6 +12,7 @@ import android.support.annotation.Nullable;
 import java.util.Arrays;
 import java.util.List;
 import android.net.Uri;
+import android.util.Log;
 
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -33,6 +34,8 @@ public class RNAppShortcutsModule extends ReactContextBaseJavaModule {
     private final String ICON_NAME_KEY = "iconName";
     private final String ACTIVITY_NAME_KEY = "activityName";
     private final String URL = "url";
+    private  ShortcutInfo shortcut=null;
+    private  ShortcutManager shortcutManager=null;
 
     public RNAppShortcutsModule(ReactApplicationContext reactContext) {
         super(reactContext);
@@ -59,16 +62,25 @@ public class RNAppShortcutsModule extends ReactContextBaseJavaModule {
     public void removeShortcut(String id) {
         if (Build.VERSION.SDK_INT < 25) return;
 
-        ShortcutManager shortcutManager = getShortCutManager();
-        shortcutManager.removeDynamicShortcuts(Arrays.asList(id));
+        try {
+            ShortcutManager shortcutManager = getShortCutManager();
+            shortcutManager.removeDynamicShortcuts(Arrays.asList(id));
+        }catch (Exception e){
+
+        }
     }
 
     @ReactMethod
     public void removeAllShortcuts() {
         if (Build.VERSION.SDK_INT < 25) return;
 
-        ShortcutManager shortcutManager = getShortCutManager();
-        shortcutManager.removeAllDynamicShortcuts();
+       try {
+           ShortcutManager shortcutManager = getShortCutManager();
+           shortcutManager.removeAllDynamicShortcuts();
+       } catch (Exception e){
+
+       }
+
     }
 
     @ReactMethod
@@ -89,8 +101,13 @@ public class RNAppShortcutsModule extends ReactContextBaseJavaModule {
 
         ShortcutInfo shortcut = initShortcut(shortcutDetails);
 
-        ShortcutManager shortcutManager = getShortCutManager();
-        shortcutManager.addDynamicShortcuts(Arrays.asList(shortcut));
+        try{
+            ShortcutManager shortcutManager = getShortCutManager();
+            shortcutManager.addDynamicShortcuts(Arrays.asList(shortcut));
+        } catch (Exception e){
+
+        }
+
     }
 
     @ReactMethod
@@ -132,32 +149,44 @@ public class RNAppShortcutsModule extends ReactContextBaseJavaModule {
         if(!isEmpty(targetUrl)){
 //            Activity currentActivity = this.reactContext.getCurrentActivity();
 //            Context currentContext = currentActivity.getApplicationContext();
-            int iconId = reactContext.getResources().getIdentifier(shortcutDetail.getString(ICON_NAME_KEY),
-                    shortcutDetail.getString(ICON_FOLDER_KEY), reactContext.getPackageName());
+            int iconId = this.reactContext.getResources().getIdentifier(shortcutDetail.getString(ICON_NAME_KEY),
+                    shortcutDetail.getString(ICON_FOLDER_KEY), this.reactContext.getPackageName());
 
-            ShortcutInfo shortcut = new ShortcutInfo.Builder(getCurrentActivity(), shortcutDetail.getString(ID_KEY))
-                    .setShortLabel(shortcutDetail.getString(SHORT_LABEL_KEY))
-                    .setLongLabel(shortcutDetail.getString(LONG_LABEL_KEY))
-                    .setIcon(Icon.createWithResource(reactContext, iconId)).setIntent(new Intent(Intent.ACTION_VIEW,
-                            Uri.parse(targetUrl)))
-                    .build();
+            try {
+                targetUrl = shortcutDetail.getString(URL);
+            } catch (Exception e) {
+
+            }
+            try {
+                shortcut = new ShortcutInfo.Builder(getCurrentActivity(), shortcutDetail.getString(ID_KEY))
+                        .setShortLabel(shortcutDetail.getString(SHORT_LABEL_KEY))
+                        .setLongLabel(shortcutDetail.getString(LONG_LABEL_KEY))
+                        .setIcon(Icon.createWithResource(this.reactContext, iconId)).setIntent(new Intent(Intent.ACTION_VIEW,
+                                Uri.parse(targetUrl)))
+                        .build();
+            }catch (Exception e){
+//                Log.i("shoutCut## 1",e.toString());
+            }
             return shortcut;
         }
         else {
 //            Activity currentActivity = this.reactContext.getCurrentActivity();
-            Intent intent = new Intent(reactContext, getCurrentActivity().getClass());
+            Intent intent = new Intent(this.reactContext, getCurrentActivity().getClass());
             intent.putExtra("shortcutId", shortcutDetail.getString(ID_KEY));
             intent.setAction(Intent.ACTION_VIEW);
 
-            Context currentContext = reactContext;
-            int iconId = currentContext.getResources().getIdentifier(shortcutDetail.getString(ICON_NAME_KEY),
-                    shortcutDetail.getString(ICON_FOLDER_KEY), currentContext.getPackageName());
 
-            ShortcutInfo shortcut = new ShortcutInfo.Builder(getCurrentActivity(), shortcutDetail.getString(ID_KEY))
+            int iconId = this.reactContext.getResources().getIdentifier(shortcutDetail.getString(ICON_NAME_KEY),
+                    shortcutDetail.getString(ICON_FOLDER_KEY), this.reactContext.getPackageName());
+
+            try{ shortcut = new ShortcutInfo.Builder(getCurrentActivity(), shortcutDetail.getString(ID_KEY))
                     .setShortLabel(shortcutDetail.getString(SHORT_LABEL_KEY))
                     .setLongLabel(shortcutDetail.getString(LONG_LABEL_KEY))
-                    .setIcon(Icon.createWithResource(reactContext, iconId)).setIntent(intent)
+                    .setIcon(Icon.createWithResource(this.reactContext, iconId)).setIntent(intent)
                     .build();
+            }catch (Exception e){
+
+            }
             return shortcut;
         }
 
@@ -186,8 +215,11 @@ public class RNAppShortcutsModule extends ReactContextBaseJavaModule {
     private ShortcutManager getShortCutManager() {
         if (Build.VERSION.SDK_INT < 25) return null;
 
-        Activity currentActivity = reactContext.getCurrentActivity();
-        ShortcutManager shortcutManager = currentActivity.getSystemService(ShortcutManager.class);
+        try {
+            shortcutManager = this.reactContext.getCurrentActivity().getSystemService(ShortcutManager.class);
+        }catch (Exception e){
+
+        }
 
         return shortcutManager;
     }
