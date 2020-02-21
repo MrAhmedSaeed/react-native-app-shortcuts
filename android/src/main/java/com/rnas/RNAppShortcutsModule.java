@@ -7,12 +7,13 @@ import android.content.pm.ShortcutManager;
 import android.graphics.drawable.Icon;
 import android.app.Activity;
 import android.os.Build;
-import android.support.annotation.Nullable;
 
 import java.util.Arrays;
 import java.util.List;
 import android.net.Uri;
 import android.util.Log;
+
+import androidx.annotation.Nullable;
 
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
